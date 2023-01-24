@@ -1,0 +1,24 @@
+{
+  "name": "fullstackopen2022-part-3",
+  "version": "1.0.0",
+  "description": "FullstackOpen2022 part 3",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MelinaAH/FullstackOpen2022-part-3.git"
+  },
+  "author": "Melina Aalto-Halme",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MelinaAH/FullstackOpen2022-part-3/issues"
+  },
+  "homepage": "https://github.com/MelinaAH/FullstackOpen2022-part-3#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
