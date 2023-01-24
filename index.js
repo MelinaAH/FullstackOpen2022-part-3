@@ -24,22 +24,19 @@ let persons = [
     },
 ]
 
-const timeForRequest = function (request, response, next) {
-    request.timeForRequest = new Date();
-    next();
-};
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id);
+    const person = persons.find(person => person.id === id);
 
-console.log(timeForRequest);
+    if (person) {
+        response.send(`<p>${person.name} tel. ${person.number}</p>`);
+    }
 
-app.use(timeForRequest);
-
-app.get('/info', (request, response) => {
-    const amountOfPersons = persons.length;
-    console.log(Date.now());
-    response.send(`<p>Phonebook has info for ${amountOfPersons} people</p><p>${request.timeForRequest}</p>`);
+    else {
+        response.status(404).end();
+    }
 })
 
 const PORT = 3001;
 app.listen(PORT);
 console.log(`Server is running on port ${PORT}`);
-
