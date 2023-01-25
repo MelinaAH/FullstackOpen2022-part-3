@@ -32,7 +32,7 @@ function generateId(maxNumber) {
 
 app.get('/api/persons', (request, response) => {
     response.json(persons);
-  })
+})
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
@@ -49,18 +49,34 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const data = request.body;
+    const personExists = persons.find(person => person.name === data.name);
+    
+    console.log(`Data.name ${data.name}`);
+    //console.log(`Person ${personExists.name} is already added`);
 
-    // if (!data.name && !data.number)
-
-    const person = {
-        id: generateId(997),
-        name: data.name,
-        number: data.number,
+    if (!data.name) {
+        return response.status(400).json({ error: 'Name field cannot be empty' });
     }
 
-    persons = persons.concat(person);
+    else if (!data.number) {
+        return response.status(400).json({ error: 'Number field cannot be empty' });
+    }
 
-    response.json(person);
+    else if (personExists) {
+        return response.status(400).json({ error: 'Name must be unique' });
+    }
+
+    else {
+        const person = {
+            id: generateId(997),
+            name: data.name,
+            number: data.number,
+        }
+    
+        persons = persons.concat(person);
+    
+        response.json(person);
+    }
 })
 
 app.delete('/api/persons/:id', (request, response) => {
