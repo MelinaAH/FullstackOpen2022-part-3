@@ -28,6 +28,7 @@ let persons = [
 
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
 function generateId(maxNumber) {
     return Math.floor(Math.random() * maxNumber);
@@ -79,6 +80,10 @@ app.post('/api/persons', (request, response) => {
         persons = persons.concat(person);
     
         response.json(person);
+
+        morgan.token('body', function getBody(req) {
+            return JSON.stringify(req.body);
+        });
     }
 })
 
