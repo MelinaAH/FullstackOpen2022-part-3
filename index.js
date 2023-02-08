@@ -31,6 +31,7 @@ app.use(express.json());
 app.use(morgan('tiny'));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors());
+app.use(express.static('build'));
 
 function generateId(maxNumber) {
     return Math.floor(Math.random() * maxNumber);
@@ -57,7 +58,8 @@ app.post('/api/persons', (request, response) => {
     const data = request.body;
     const personExists = persons.find(person => person.name === data.name);
     
-    console.log(`Data.name ${data.name}`);
+    console.log(data, typeof data);
+    console.log(`Data variable ${data.name}`);
     //console.log(`Person ${personExists.name} is already added`);
 
     if (!data.name) {
@@ -82,12 +84,12 @@ app.post('/api/persons', (request, response) => {
         persons = persons.concat(person);
     
         response.json(person);
-
-        morgan.token('body', function getBody(req) {
-            return JSON.stringify(req.body);
-        });
     }
 })
+
+morgan.token('body', function getBody(req) {
+    return JSON.stringify(req.body);
+});
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
