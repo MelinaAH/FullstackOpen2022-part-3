@@ -11,22 +11,22 @@ app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(express.static('build'));
 
-let persons = [];
+let people = [];
 
 function generateId(maxNumber) {
     return Math.floor(Math.random() * maxNumber);
 }
 
-app.get('/api/persons', (request, response) => {
-    Person.find({}).then(persons => {
-        console.log(persons);
-        response.json(persons);
+app.get('/api/people', (request, response) => {
+    Person.find({}).then(people => {
+        console.log(people);
+        response.json(people);
     });
 });
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/people/:id', (request, response) => {
     const id = Number(request.params.id);
-    const person = persons.find(person => person.id === id);
+    const person = people.find(person => person.id === id);
 
     if (person) {
         response.send(`<p>${person.name} tel. ${person.number}</p>`);
@@ -37,9 +37,9 @@ app.get('/api/persons/:id', (request, response) => {
     }
 }),
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/people', (request, response) => {
     const data = request.body;
-    const personExists = persons.find(person => person.name === data.name);
+    const personExists = people.find(person => person.name === data.name);
     
     console.log(data, typeof data);
     console.log(`Data variable ${data.name}`);
@@ -64,7 +64,7 @@ app.post('/api/persons', (request, response) => {
             number: data.number,
         }
     
-        persons = persons.concat(person);
+        people = people.concat(person);
     
         response.json(person);
     }
@@ -74,9 +74,9 @@ morgan.token('body', function getBody(req) {
     return JSON.stringify(req.body);
 });
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/people/:id', (request, response) => {
     const id = Number(request.params.id);
-    persons = persons.filter(person => person.id != id);
+    people = people.filter(person => person.id != id);
 
     response.status(204).end();
 })
