@@ -25,17 +25,16 @@ app.get('/api/people', (request, response) => {
 });
 
 app.get('/api/people/:id', (request, response) => {
-    const id = Number(request.params.id);
-    const person = people.find(person => person.id === id);
-
-    if (person) {
-        response.send(`<p>${person.name} tel. ${person.number}</p>`);
-    }
-
-    else {
-        response.status(404).end();
-    }
-}),
+    Person.findById(request.params.id).then(person => {
+        if (person) {
+            response.send(`<p>${person.name} tel. ${person.number}</p>`);
+        }
+    
+        else {
+            response.status(404).end();
+        }
+    });
+});
 
 app.post('/api/people', (request, response) => {
     const data = request.body;
@@ -58,15 +57,15 @@ app.post('/api/people', (request, response) => {
     }
 
     else {
-        const person = {
+        const person = new Person({
             id: generateId(997),
             name: data.name,
             number: data.number,
-        }
+        })
     
-        people = people.concat(person);
-    
-        response.json(person);
+        person.save().then(savedPerson => {
+            response.json(savedPerson)
+        })
     }
 })
 
@@ -81,7 +80,7 @@ app.delete('/api/people/:id', (request, response) => {
     response.status(204).end();
 })
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
