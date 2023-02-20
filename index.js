@@ -29,7 +29,7 @@ app.get('/api/people/:id', (request, response) => {
         if (person) {
             response.send(`<p>${person.name} tel. ${person.number}</p>`);
         }
-    
+
         else {
             response.status(404).end();
         }
@@ -39,7 +39,7 @@ app.get('/api/people/:id', (request, response) => {
 app.post('/api/people', (request, response) => {
     const data = request.body;
     const personExists = people.find(person => person.name === data.name);
-    
+
     console.log(data, typeof data);
     console.log(`Data variable ${data.name}`);
     //console.log(`Person ${personExists.name} is already added`);
@@ -62,7 +62,7 @@ app.post('/api/people', (request, response) => {
             name: data.name,
             number: data.number,
         })
-    
+
         person.save().then(savedPerson => {
             response.json(savedPerson)
         })
@@ -74,11 +74,19 @@ morgan.token('body', function getBody(req) {
 });
 
 app.delete('/api/people/:id', (request, response) => {
-    const id = Number(request.params.id);
-    people = people.filter(person => person.id != id);
+    const id = request.params.id;
 
-    response.status(204).end();
-})
+    Person.findByIdAndDelete(id, (err) => {
+        if (err) {
+            response.status(500).json({ error: err.message });
+        }
+
+        else {
+            people = people.filter(person => person.id != id);
+            response.status(204).end();
+        }
+    });
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
