@@ -25,7 +25,8 @@ app.get('/api/people', (request, response) => {
 });
 
 app.get('/api/people/:id', (request, response) => {
-    Person.findById(request.params.id).then(person => {
+    Person.findById(request.params.id)
+    .then(person => {
         if (person) {
             response.send(`<p>${person.name} tel. ${person.number}</p>`);
         }
@@ -33,7 +34,11 @@ app.get('/api/people/:id', (request, response) => {
         else {
             response.status(404).end();
         }
-    });
+    })
+    .catch(error => {
+        console.log(error);
+        response.status(400).send({ error: 'malformatted id' });
+    })
 });
 
 app.post('/api/people', (request, response) => {
