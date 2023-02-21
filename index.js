@@ -27,18 +27,24 @@ function generateId(maxNumber) {
     return Math.floor(Math.random() * maxNumber);
 }
 
-app.get('/api/people', (request, response) => {
-    Person.find({}).then(people => {
+app.get('/api/people', (request, response, next) => {
+    Person.find({})
+    .then(people => {
         console.log(people);
         response.json(people);
-    });
+    })
+    .catch(error => {
+        console.log(error);
+        next(error);
+    })
 });
 
 app.get('/api/people/:id', (request, response, next) => {
     Person.findById(request.params.id)
         .then(person => {
             if (person) {
-                response.send(`<p>${person.name} tel. ${person.number}</p>`);
+                //response.send(`<p>${person.name} tel. ${person.number}</p>`);
+                response.json(person);
             }
 
             else {
@@ -51,8 +57,9 @@ app.get('/api/people/:id', (request, response, next) => {
         })
 });
 
-app.post('/api/people', (request, response) => {
+app.post('/api/people', (request, response, next) => {
     const data = request.body;
+    console.log('The Post-method\'s request.body', data);
     const personExists = people.find(person => person.name === data.name);
 
     console.log(data, typeof data);
@@ -67,10 +74,6 @@ app.post('/api/people', (request, response) => {
         return response.status(400).json({ error: 'Number field cannot be empty' });
     }
 
-    /*else if (personExists) {
-        return response.status(400).json({ error: 'Name must be unique' });
-    }*/
-
     else {
         const person = new Person({
             id: generateId(997),
@@ -78,8 +81,13 @@ app.post('/api/people', (request, response) => {
             number: data.number,
         })
 
-        person.save().then(savedPerson => {
+        person.save()
+        .then(savedPerson => {
             response.json(savedPerson)
+        })
+        .catch(error => {
+            console.log(error);
+            next(error);
         })
     }
 })
@@ -101,7 +109,10 @@ app.put('/api/people/:id', (request, response, next) => {
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
-        .catch(error => next(error))
+        .catch(error => {
+            console.log(error);
+            next(error);
+        })
 });
 
 app.delete('/api/people/:id', (request, response, next) => {
@@ -111,7 +122,10 @@ app.delete('/api/people/:id', (request, response, next) => {
         .then(result => {
             response.status(204).end()
         })
-        .catch(error => next(error))
+        .catch(error => {
+            console.log(error);
+            next(error);
+        })
 });
 
 app.use(errorHandler);
