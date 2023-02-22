@@ -11,6 +11,10 @@ const errorHandler = (error, request, response, next) => {
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' });
     }
+    else if (error.name === 'ValidationError') {
+        //return response.status(400).json({ error: 'Name field and/or number field cannot be empty' });
+        return response.status(400).json({ error: error.message });
+    }
 
     next(error);
 };
@@ -59,37 +63,24 @@ app.get('/api/people/:id', (request, response, next) => {
 
 app.post('/api/people', (request, response, next) => {
     const data = request.body;
-    console.log('The Post-method\'s request.body', data);
-    const personExists = people.find(person => person.name === data.name);
 
     console.log(data, typeof data);
-    console.log(`Data variable ${data.name}`);
-    //console.log(`Person ${personExists.name} is already added`);
+    console.log(`The name to be added ${data.name}`);
 
-    if (!data.name) {
-        return response.status(400).json({ error: 'Name field cannot be empty' });
-    }
+    const person = new Person({
+        id: generateId(997),
+        name: data.name,
+        number: data.number,
+    })
 
-    else if (!data.number) {
-        return response.status(400).json({ error: 'Number field cannot be empty' });
-    }
-
-    else {
-        const person = new Person({
-            id: generateId(997),
-            name: data.name,
-            number: data.number,
-        })
-
-        person.save()
-        .then(savedPerson => {
-            response.json(savedPerson)
-        })
-        .catch(error => {
-            console.log(error);
-            next(error);
-        })
-    }
+    person.save()
+    .then(savedPerson => {
+        response.json(savedPerson)
+    })
+    .catch(error => {
+        console.log(error);
+        next(error);
+    })
 })
 
 morgan.token('body', function getBody(req) {
@@ -97,15 +88,11 @@ morgan.token('body', function getBody(req) {
 });
 
 app.put('/api/people/:id', (request, response, next) => {
-    const data = request.body;
+    const { id, name, number} = request.body;
 
-    const person = {
-        id: data.id,
-        name: data.name,
-        number: data.number
-    }
-
-    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    Person.findByIdAndUpdate(request.params.id,
+        { id, name, number},
+        { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
