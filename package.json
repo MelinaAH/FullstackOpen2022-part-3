@@ -7,10 +7,11 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd ../fullstackOpen2022 && npm run build && cp -r build ../FullstackOpen2022-part-3",
+    "build:ui": "rm -rf build && cd ../fullstackOpen2022/part2/2_6_puhelinluettelo && npm run build && cp -r build ../FullstackOpen2022-part-3",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/MelinaAH/FullstackOpen2022-part-3#readme",
   "devDependencies": {
+    "eslint": "^8.34.0",
     "nodemon": "^2.0.20"
   },
   "dependencies": {
